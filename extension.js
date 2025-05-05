@@ -29,16 +29,15 @@ class BrightnessController extends PanelMenu.Button {
             const item = new PopupMenu.PopupBaseMenuItem({ activate: false });
 
             const label = new St.Label({ text: output, x_expand: true });
-            const slider = new Slider.Slider(0.5); // default to 50%
+            const initialValue = this._getCurrentBrightnessRatio(output);
+            const slider = new Slider.Slider(initialValue);
 
             slider.connect('notify::value', () => {
-                // Round to nearest 5%
                 const roundedValue = Math.round(slider.value * 20) / 20;
 
-                // Snap slider to nearest step if needed
                 if (Math.abs(slider.value - roundedValue) > 0.001) {
                     slider.value = roundedValue;
-                    return; // prevent redundant calls
+                    return;
                 }
 
                 this._applyBrightness(output, roundedValue);
@@ -60,14 +59,13 @@ class BrightnessController extends PanelMenu.Button {
             const outputStr = new TextDecoder().decode(out);
             const lines = outputStr.split('\n');
             return lines.filter(l => l.includes(' connected')).map(l => l.split(' ')[0]);
-        } catch (e) {
-            log(`[BrightnessController] Error getting connected displays: ${e}`);
+        } catch (_) {
             return [];
         }
     }
 
     _applyBrightness(output, value) {
-        const percent = Math.round(Math.max(0.05, value) * 100); // avoid 0%
+        const percent = Math.round(Math.max(0.05, value) * 100);
 
         if (this._isInternalDisplay(output)) {
             this._setBrightnessctl(percent);
@@ -83,36 +81,51 @@ class BrightnessController extends PanelMenu.Button {
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 
-            subprocess.communicate_utf8_async(null, null, (proc, res) => {
-                try {
-                    proc.communicate_utf8_finish(res);
-                } catch (err) {
-                    log(`[BrightnessController] brightnessctl error: ${err.message}`);
-                }
-            });
-        } catch (e) {
-            log(`[BrightnessController] brightnessctl failed: ${e.message}`);
-        }
+            subprocess.communicate_utf8_async(null, null, () => {});
+        } catch (_) {}
     }
 
     _setDdcutil(output, percent) {
-        const clamped = Math.max(1, Math.min(100, percent)); // Some monitors crash below 1%
+        const clamped = Math.max(1, Math.min(100, percent));
         try {
             const subprocess = Gio.Subprocess.new(
                 ['ddcutil', 'setvcp', '10', `${clamped}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 
-            subprocess.communicate_utf8_async(null, null, (proc, res) => {
-                try {
-                    proc.communicate_utf8_finish(res);
-                } catch (err) {
-                    log(`[BrightnessController] ddcutil error: ${err.message}`);
+            subprocess.communicate_utf8_async(null, null, () => {});
+        } catch (_) {}
+    }
+
+    _getCurrentBrightnessRatio(output) {
+        try {
+            if (this._isInternalDisplay(output)) {
+                const [ok, out] = GLib.spawn_command_line_sync('brightnessctl g');
+                const [okMax, outMax] = GLib.spawn_command_line_sync('brightnessctl m');
+                if (ok && okMax) {
+                    const current = parseInt(new TextDecoder().decode(out).trim());
+                    const max = parseInt(new TextDecoder().decode(outMax).trim());
+                    if (!isNaN(current) && !isNaN(max) && max > 0) {
+                        return Math.min(1.0, Math.max(0.05, current / max));
+                    }
                 }
-            });
-        } catch (e) {
-            log(`[BrightnessController] ddcutil failed for ${output}: ${e.message}`);
-        }
+            } else {
+                const [ok, out] = GLib.spawn_command_line_sync(`ddcutil getvcp 10 --brief --display ${output}`);
+                if (ok) {
+                    const outputStr = new TextDecoder().decode(out).trim();
+                    const match = outputStr.match(/current value = (\d+), max value = (\d+)/);
+                    if (match) {
+                        const current = parseInt(match[1]);
+                        const max = parseInt(match[2]);
+                        if (!isNaN(current) && !isNaN(max) && max > 0) {
+                            return Math.min(1.0, Math.max(0.05, current / max));
+                        }
+                    }
+                }
+            }
+        } catch (_) {}
+
+        return 1.0;
     }
 
     _isInternalDisplay(output) {
