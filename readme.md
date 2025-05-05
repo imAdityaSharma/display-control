@@ -28,7 +28,7 @@ Once the extension is uploaded to the GNOME Extensions website, you will be able
 
 1. **Download the ZIP File**:
 
-   * Download the ZIP from the [GitHub Releases Page](https://github.com/yourusername/brightness-controller/releases).
+   * Download the ZIP from the [GitHub Releases Page](https://github.com/iamadityasharma.pro/brightness-controller/releases).
 
 2. **Download the Install Script**:
 
@@ -49,8 +49,8 @@ Once the extension is uploaded to the GNOME Extensions website, you will be able
 ### 3. Manually Enable/Disable the Extension
 
 ```bash
-gnome-extensions enable brightness-controller@yourdomain.username
-gnome-extensions disable brightness-controller@yourdomain.username
+gnome-extensions enable brightness-controller@iamadityasharma.pro
+gnome-extensions disable brightness-controller@iamadityasharma.pro
 ```
 
 ## Troubleshooting
