@@ -1,12 +1,11 @@
 {
-    "uuid": "display-control@imadityasharma.github.com",
+    "uuid": "display-control@iamadityasharma.pro",
     "name": "Display Brightness Control",
     "description": "Adjust brightness for all connected displays",
     "version": 1,
     "shell-version": ["47","48"],
-    "url": "https://github.com/imadityasharma/display-control",
+    "url": "https://github.com/imAdityaSharma/display-control",
     "stylesheets": ["stylesheet.css"],
     "type": "module",
     "settings-schema": "org.gnome.shell.extensions.display-control"
   }
-  
