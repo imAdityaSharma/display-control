@@ -28,7 +28,7 @@ Once the extension is uploaded to the GNOME Extensions website, you will be able
 
 1. **Download the ZIP File**:
 
-   * Download the ZIP from the [GitHub Releases Page](https://github.com/iamadityasharma.pro/display-control/releases).
+   * Download the ZIP from the [GitHub Releases Page](https://github.com/imAdityaSharma/display-control/releases/tag/display-control).
 
 2. **Download the Install Script**:
 
