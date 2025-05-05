@@ -14,7 +14,7 @@ The **Brightness Controller** extension allows you to easily control the brightn
 
 Once the extension is uploaded to the GNOME Extensions website, you will be able to install it directly from there. Simply visit the link below (to be updated after uploading):
 
-[**Install on GNOME Extensions Website**](#)
+[**Install on GNOME Extensions Website(soon)**](#)
 
 ### 2. Manual Installation
 
