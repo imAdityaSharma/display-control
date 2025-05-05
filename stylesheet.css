@@ -1,0 +1,15 @@
+.brightness-label {
+    padding-right: 10px;
+    font-weight: bold;
+    color: @theme_fg_color;
+    min-width: 80px;
+}
+
+.slider {
+    min-width: 150px;
+    margin-left: 10px;
+}
+
+.popup-slider-item {
+    padding: 8px 12px;
+}

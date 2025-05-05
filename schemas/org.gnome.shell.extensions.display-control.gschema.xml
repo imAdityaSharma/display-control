@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.display-control" path="/org/gnome/shell/extensions/display-control/">
+    
+    <key name="enable-auto-brightness" type="b">
+      <default>false</default>
+      <summary>Enable auto brightness</summary>
+      <description>Automatically adjust brightness based on time or events.</description>
+    </key>
+
+    <key name="default-brightness" type="i">
+      <default>70</default>
+      <summary>Default brightness level</summary>
+      <description>Set the default brightness level (0 to 100).</description>
+    </key>
+
+    <key name="brightness-step" type="i">
+      <default>10</default>
+      <summary>Brightness step</summary>
+      <description>How much brightness should change per step (0 to 100).</description>
+    </key>
+
+  </schema>
+</schemalist>
