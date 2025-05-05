@@ -29,10 +29,19 @@ class BrightnessController extends PanelMenu.Button {
             const item = new PopupMenu.PopupBaseMenuItem({ activate: false });
 
             const label = new St.Label({ text: output, x_expand: true });
-            const slider = new Slider.Slider(0.5);  // default to 50%
+            const slider = new Slider.Slider(0.5); // default to 50%
 
             slider.connect('notify::value', () => {
-                this._applyBrightness(output, slider.value);
+                // Round to nearest 5%
+                const roundedValue = Math.round(slider.value * 20) / 20;
+
+                // Snap slider to nearest step if needed
+                if (Math.abs(slider.value - roundedValue) > 0.001) {
+                    slider.value = roundedValue;
+                    return; // prevent redundant calls
+                }
+
+                this._applyBrightness(output, roundedValue);
             });
 
             item.add_child(label);
@@ -58,7 +67,7 @@ class BrightnessController extends PanelMenu.Button {
     }
 
     _applyBrightness(output, value) {
-        const percent = Math.round(Math.max(0.05, value) * 100); // Avoid 0%
+        const percent = Math.round(Math.max(0.05, value) * 100); // avoid 0%
 
         if (this._isInternalDisplay(output)) {
             this._setBrightnessctl(percent);
@@ -87,7 +96,7 @@ class BrightnessController extends PanelMenu.Button {
     }
 
     _setDdcutil(output, percent) {
-        const clamped = Math.max(1, Math.min(100, percent)); // Some displays crash below 1%
+        const clamped = Math.max(1, Math.min(100, percent)); // Some monitors crash below 1%
         try {
             const subprocess = Gio.Subprocess.new(
                 ['ddcutil', 'setvcp', '10', `${clamped}`],
@@ -107,7 +116,7 @@ class BrightnessController extends PanelMenu.Button {
     }
 
     _isInternalDisplay(output) {
-        return output.toLowerCase().includes('eDP') || output.toLowerCase().includes('lvds');
+        return output.toLowerCase().includes('edp') || output.toLowerCase().includes('lvds');
     }
 
     destroy() {
